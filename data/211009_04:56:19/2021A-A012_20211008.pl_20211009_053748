@@ -1,0 +1,78 @@
+#!/usr/bin/perl -w
+{ BEGIN {$^W =0}
+#
+################## Script Header Info #####################
+#
+# Experiment Code: 2021A-A012
+# Experiment Title: Submm-continuum observations of the first BL Lacertae object beyond z~6
+# PI: Ekaterina Koptelova
+# Contact Person: Ekaterina Koptelova  
+# Email  : koptelova@astro.ncu.edu.tw  
+# Office : 886034227151 6975  
+# Home   : 0901279327   
+# Array  : all   
+#
+#
+############## SPECIAL INSTRUCTIONS ################
+#
+# None
+#
+################## Priming ################################
+#
+# observe -s J2331+1129 -r 23:31:53.2 -d 11:29:52.1 -e 2000 -v 0
+# dopplerTrack -S J2331+1129 -r 230 -u -s1 -f 0.0 -R B -r 240 -u -s1 -f 0.0
+#
+################## Pointing ###############################
+#
+# Pointing: None requested
+# Syntax Example: point -i 60 -r 3 -L -l -t -Q
+#
+################## Source, Calibrator and Limits ##########
+#
+$inttime="30"; 
+$targ0="J2331+1129 -r 23:31:53.2 -d 11:29:52.1 -e 2000 -v 0"; $ntarg0="40"; 
+$cal0="2327+096"; $ncal0="20";
+$cal1="2334+076"; $ncal1="20";
+$cal2="3c454.3"; $ncal2="6";
+$cal3="2232+117"; $ncal3="6";
+$flux0="3c454.3"; $nflux0="20";
+$flux1="uranus"; $nflux1="20";
+$bpass0="3c454.3"; $nbpass0="120";
+$MINEL_TARG = 33; $MAXEL_TARG = 83;
+$MINEL_GAIN = 33; $MAXEL_GAIN = 83;
+$MINEL_FLUX = 33; $MAXEL_FLUX = 81;
+$MINEL_BPASS= 33; $MAXEL_BPASS= 87;
+$MINEL_CHECK= 33; 
+#
+################## Script Initialization ##################
+#
+do 'sma.pl';
+do 'sma_add.pl';
+checkANT();
+command("radio");
+command("integrate -t $inttime");
+$myPID=$$;
+command("project -r -p 'Ekaterina Koptelova' -d '2021A-A012'");
+print "----- initialization done, starting script -----\n";
+#
+################## Science Script #########################
+#
+print "----- initial flux and bandpass calibration -----\n";
+if(!$restart){
+  &DoPass(bpass0,nbpass0);
+  &DoFlux(flux0,nflux0);
+  &DoFlux(flux1,nflux1);
+}
+
+print "----- main science target observe loop -----\n";
+  #&ObsLoop(cal0,targ0,cal0,targ0,cal0,targ0,cal0,targ0,cal0,targ0);
+  &ObsLoop(cal2,targ0,cal3);
+
+print "----- final flux and bandpass calibration -----\n";
+  &DoFlux(flux0,nflux0);
+  &DoFlux(flux1,nflux1);
+  &DoPass(bpass0,nbpass0);
+
+print "----- Congratulations!  This is the end of the script.  -----\n";}
+#
+################## File End ###############################
